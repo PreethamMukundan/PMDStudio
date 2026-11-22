@@ -30,8 +30,10 @@ const projectRow = (project, index) => {
   return `
   <article class="project-row" data-category="${project.category}" aria-label="${project.title}">
     <div class="project-media${multiple ? ' is-multi' : ''}" data-slides="${slides.length}">
-      <div class="slide-track">
+      <div class="slide-track"${multiple ? ' style="transform: translate3d(-100%, 0, 0)"' : ''}>
+        ${multiple ? `<img src="${slides[slides.length - 1].image}" alt="" aria-hidden="true" loading="lazy" draggable="false">` : ''}
         ${slides.map((slide, slideIndex) => `<img src="${slide.image}" alt="${slide.alt}" loading="${index < 2 && slideIndex === 0 ? 'eager' : 'lazy'}" draggable="false">`).join('')}
+        ${multiple ? `<img src="${slides[0].image}" alt="" aria-hidden="true" loading="lazy" draggable="false">` : ''}
       </div>
       <a class="slide-link" href="#project/${project.slug}" draggable="false" aria-label="View ${project.title}${multiple ? ' (drag or use arrow keys for more images)' : ''}"></a>
     </div>
@@ -180,26 +182,52 @@ function step(direction) {
   goToProject(next)
 }
 
+/* Images loop like a circle. Each multi-image row is laid out as
+   [copy of last] [image 1] … [image N] [copy of first], so position = index + 1.
+   Moving past either end slides onto the copy, then silently jumps to the real image. */
+const SLIDE_DURATION = 1000
+
+function placeSlide(media, position, animate) {
+  const slideTrack = media.querySelector('.slide-track')
+  slideTrack.style.transition = animate ? '' : 'none'
+  slideTrack.style.transform = `translate3d(${-position * 100}%, 0, 0)`
+  if (!animate) {
+    void slideTrack.offsetWidth // apply the jump before transitions come back on
+    slideTrack.style.transition = ''
+  }
+}
+
+// Finish any pending jump from a copy back to the real image.
+function settleSlide(media) {
+  if (!media.settleTimer) return
+  clearTimeout(media.settleTimer)
+  media.settleTimer = null
+  placeSlide(media, Number(media.dataset.index) + 1, false)
+}
+
 function goToSlide(row, direction) {
   const media = row.querySelector('.project-media')
   const total = Number(media.dataset.slides)
   if (total < 2) return
-  setSlide(row, ((Number(media.dataset.index || 0) + direction) % total + total) % total)
-}
-
-function setSlide(row, index) {
-  const media = row.querySelector('.project-media')
-  const total = Number(media.dataset.slides)
-  media.dataset.index = index
-  media.querySelector('.slide-track').style.transform = `translate3d(${-index * 100}%, 0, 0)`
-  row.querySelector('.slide-count').textContent = `${index + 1}/${total}`
+  settleSlide(media)
+  const index = Number(media.dataset.index || 0)
+  const position = index + 1 + direction
+  const next = (index + direction + total) % total
+  media.dataset.index = next
+  placeSlide(media, position, true)
+  if (position === 0 || position === total + 1) {
+    media.settleTimer = setTimeout(() => settleSlide(media), SLIDE_DURATION)
+  }
+  row.querySelector('.slide-count').textContent = `${next + 1}/${total}`
   syncCaption()
 }
 
 function resetStage() {
   track.querySelectorAll('.project-media').forEach((media) => {
+    clearTimeout(media.settleTimer)
+    media.settleTimer = null
     media.dataset.index = 0
-    media.querySelector('.slide-track').style.transform = ''
+    if (Number(media.dataset.slides) > 1) placeSlide(media, 1, false)
     const count = media.closest('.project-row').querySelector('.slide-count')
     if (count) count.textContent = `1/${media.dataset.slides}`
   })
@@ -253,6 +281,7 @@ track.addEventListener('pointerdown', (event) => {
   if (event.pointerType !== 'mouse' || event.button !== 0) return
   const media = event.target.closest('.project-media.is-multi')
   if (!media) return
+  settleSlide(media)
   drag = { media, startX: event.clientX, dx: 0, moved: false, index: Number(media.dataset.index || 0), width: media.clientWidth }
 })
 
@@ -266,10 +295,9 @@ window.addEventListener('pointermove', (event) => {
     drag.media.querySelector('.slide-track').style.transition = 'none'
   }
   if (!drag.moved) return
-  const total = Number(drag.media.dataset.slides)
-  const atEdge = (drag.index === 0 && drag.dx > 0) || (drag.index === total - 1 && drag.dx < 0)
-  const offset = atEdge ? drag.dx / 3 : drag.dx
-  drag.media.querySelector('.slide-track').style.transform = `translate3d(${-drag.index * drag.width + offset}px, 0, 0)`
+  // The copies at each end mean there is always a neighbour image to drag towards.
+  const offset = Math.max(-drag.width, Math.min(drag.width, drag.dx))
+  drag.media.querySelector('.slide-track').style.transform = `translate3d(${-(drag.index + 1) * drag.width + offset}px, 0, 0)`
 })
 
 window.addEventListener('pointerup', () => {
@@ -281,10 +309,12 @@ window.addEventListener('pointerup', () => {
   setTimeout(() => { suppressClick = false }, 0)
   media.classList.remove('is-dragging')
   document.body.classList.remove('is-dragging')
-  media.querySelector('.slide-track').style.transition = ''
-  const total = Number(media.dataset.slides)
+  const slideTrack = media.querySelector('.slide-track')
+  void slideTrack.offsetWidth // lock in the dragged position so the glide starts from where it was let go
+  slideTrack.style.transition = ''
   const shift = Math.abs(dx) > width * 0.15 ? -Math.sign(dx) : 0
-  setSlide(media.closest('.project-row'), Math.max(0, Math.min(total - 1, index + shift)))
+  if (shift) goToSlide(media.closest('.project-row'), shift)
+  else placeSlide(media, index + 1, true) // not far enough: glide back
 })
 
 track.addEventListener('click', (event) => {
