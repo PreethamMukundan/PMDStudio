@@ -1,0 +1,221 @@
+{
+  "site": {
+    "name": "Preethish Mukunthan Design Studio",
+    "headerName": "pmd",
+    "headerSubline": "studio.",
+    "location": "New York · London · Everywhere",
+    "intro": "Preethish Mukunthan Design Studio is an interior architecture practice creating warm, considered spaces for living, gathering, and becoming.",
+    "email": "hello@ateliernira.com",
+    "instagram": "@ateliernira",
+    "footerNote": "Interior architecture & objects",
+    "studio": [
+      "Preethish Mukunthan Design Studio is an interior architecture practice creating warm, considered spaces for living, gathering, and becoming.",
+      "Every project begins with listening. We work slowly and closely, shaping architecture, interiors, and objects into places with a distinct sense of ease."
+    ],
+    "heroImage": "/hero.jpg",
+    "heroImageMobile": "/hero-mobile.jpg",
+    "heroAlt": "Bedroom with timber wall panels, pendant lights and a low upholstered bed"
+  },
+  "navigation": [
+    {
+      "label": "Studio",
+      "target": "studio"
+    },
+    {
+      "label": "Projects",
+      "target": "projects"
+    },
+    {
+      "label": "Info",
+      "target": "info"
+    }
+  ],
+  "categories": [
+    "Architecture",
+    "Interior",
+    "Product"
+  ],
+  "projects": [
+    {
+      "title": "Harbor House",
+      "category": "Architecture",
+      "typology": "Private Residence",
+      "location": "Copenhagen",
+      "year": "2025",
+      "status": "on-going",
+      "image": "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?auto=format&fit=crop&w=1200&q=80",
+      "alt": "Modern architecture home with warm timber facade",
+      "brief": [
+        "A quiet waterfront home shaped by long views, natural light, and a warm timber exterior. The plan opens toward the harbor while keeping intimate spaces sheltered from the wind."
+      ],
+      "gallery": [
+        {
+          "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Warm, light-filled living room"
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Modern house interior with natural materials"
+        }
+      ],
+      "moodBoard": "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1800&q=85",
+      "floorPlans": true
+    },
+    {
+      "title": "North Courtyard",
+      "category": "Architecture",
+      "typology": "Urban Housing",
+      "location": "Stockholm",
+      "year": "2024",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1200&q=80",
+      "alt": "Minimal courtyard home and garden",
+      "brief": [
+        "A compact urban home organized around a planted courtyard. The shared garden brings daylight into the center of the plan and creates a calm transition from street to home."
+      ],
+      "gallery": [
+        {
+          "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Sunlit courtyard-facing living space"
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Minimal home with a garden view"
+        }
+      ],
+      "moodBoard": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1800&q=85",
+      "floorPlans": true
+    },
+    {
+      "title": "Moss Pavilion",
+      "category": "Architecture",
+      "typology": "Cultural Space",
+      "location": "Amsterdam",
+      "year": "2024",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?auto=format&fit=crop&w=1200&q=80",
+      "alt": "Minimal pavilion architecture in landscaped setting",
+      "brief": [
+        "A small public pavilion designed as a threshold between garden and city. A simple timber frame and filtered light give the space a gentle presence in its landscape."
+      ],
+      "gallery": [
+        {
+          "image": "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Contemporary pavilion set among trees"
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Minimal architectural exterior and landscape"
+        }
+      ],
+      "moodBoard": "https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?auto=format&fit=crop&w=1800&q=85",
+      "floorPlans": true
+    },
+    {
+      "title": "Stone Line",
+      "category": "Architecture",
+      "typology": "Hospitality",
+      "location": "Lisbon",
+      "year": "2023",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?auto=format&fit=crop&w=1200&q=80",
+      "alt": "Hotel facade with stone details and outdoor seating",
+      "brief": [
+        "A hospitality project rooted in Lisbon's material palette. Existing stonework is paired with restrained interventions, creating welcoming public rooms that feel connected to the surrounding streets."
+      ],
+      "gallery": [
+        {
+          "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Quiet hospitality interior with natural light"
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Warm lounge with natural materials"
+        }
+      ],
+      "moodBoard": "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1800&q=85",
+      "floorPlans": true
+    },
+    {
+      "title": "Atrium House",
+      "category": "Architecture",
+      "typology": "Villa",
+      "location": "Milan",
+      "year": "2023",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=1200&q=80",
+      "alt": "Luxury villa with courtyard and sculptural architecture",
+      "brief": [
+        "A contemporary villa centered on a generous atrium. The courtyard brings greenery into daily life and connects the shared living spaces with quieter private rooms."
+      ],
+      "gallery": [
+        {
+          "image": "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Villa interior opening to a courtyard"
+        },
+        {
+          "image": "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1800&q=85",
+          "alt": "Contemporary living space with garden views"
+        }
+      ],
+      "moodBoard": "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1800&q=85",
+      "floorPlans": true
+    },
+    {
+      "title": "Casa Marea",
+      "category": "Interior",
+      "typology": "Residential",
+      "location": "Mallorca",
+      "year": "2024",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1800&q=85",
+      "alt": "Sunlit living room with sculptural furniture",
+      "brief": [
+        "Project description coming soon."
+      ],
+      "gallery": []
+    },
+    {
+      "title": "Hearth House",
+      "category": "Interior",
+      "typology": "Residential",
+      "location": "Hudson Valley",
+      "year": "2023",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=1400&q=85",
+      "alt": "Warm modern interior with a stone fireplace",
+      "brief": [
+        "Project description coming soon."
+      ],
+      "gallery": []
+    },
+    {
+      "title": "The Long Room",
+      "category": "Interior",
+      "typology": "Hospitality",
+      "location": "Copenhagen",
+      "year": "2023",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1400&q=85",
+      "alt": "Minimal dining room with long table and pendant lights",
+      "brief": [
+        "Project description coming soon."
+      ],
+      "gallery": []
+    },
+    {
+      "title": "Still / Life",
+      "category": "Product",
+      "typology": "Objects",
+      "location": "New York",
+      "year": "2022",
+      "status": "completed",
+      "image": "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1400&q=85",
+      "alt": "Textured neutral bedroom with layered materials",
+      "brief": [
+        "Project description coming soon."
+      ],
+      "gallery": []
+    }
+  ]
+}
