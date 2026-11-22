@@ -295,9 +295,18 @@ window.addEventListener('pointermove', (event) => {
     drag.media.querySelector('.slide-track').style.transition = 'none'
   }
   if (!drag.moved) return
-  // The copies at each end mean there is always a neighbour image to drag towards.
-  const offset = Math.max(-drag.width, Math.min(drag.width, drag.dx))
-  drag.media.querySelector('.slide-track').style.transform = `translate3d(${-(drag.index + 1) * drag.width + offset}px, 0, 0)`
+  // Each time the drag covers a full image width, move on to the next image (looping round)
+  // and keep following the mouse, so a long drag never stops at an end.
+  const total = Number(drag.media.dataset.slides)
+  const startIndex = drag.index
+  while (drag.dx <= -drag.width) { drag.index = (drag.index + 1) % total; drag.startX -= drag.width; drag.dx += drag.width }
+  while (drag.dx >= drag.width) { drag.index = (drag.index - 1 + total) % total; drag.startX += drag.width; drag.dx -= drag.width }
+  if (drag.index !== startIndex) {
+    drag.media.dataset.index = drag.index
+    drag.media.closest('.project-row').querySelector('.slide-count').textContent = `${drag.index + 1}/${total}`
+    syncCaption()
+  }
+  drag.media.querySelector('.slide-track').style.transform = `translate3d(${-(drag.index + 1) * drag.width + drag.dx}px, 0, 0)`
 })
 
 window.addEventListener('pointerup', () => {
