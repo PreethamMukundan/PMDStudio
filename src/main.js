@@ -2,17 +2,27 @@ import './style.css'
 import content from './content.json'
 import { initGalleries } from './gallery.js'
 
+// Local files (paths starting with "/") are served under the site base path, e.g. /PMDStudio/ on GitHub Pages.
+const withBase = (path) => (path.startsWith('/') ? import.meta.env.BASE_URL + path.slice(1) : path)
+
 const { site, navigation, projects } = content
+site.heroImage = withBase(site.heroImage)
+site.heroImageMobile = withBase(site.heroImageMobile)
 const placeholderFloorPlans = [
-  { image: '/placeholder-floor-plan.svg', title: 'Ground floor plan' },
-  { image: '/placeholder-upper-floor-plan.svg', title: 'Upper floor plan' },
-  { image: '/placeholder-building-section.svg', title: 'Building section' }
+  { image: withBase('/placeholder-floor-plan.svg'), title: 'Ground floor plan' },
+  { image: withBase('/placeholder-upper-floor-plan.svg'), title: 'Upper floor plan' },
+  { image: withBase('/placeholder-building-section.svg'), title: 'Building section' }
 ]
 const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const instagramUrl = `https://instagram.com/${site.instagram.replace('@', '')}`
 const meta = (project) => [project.typology, project.year, project.status].filter(Boolean).join(' | ').replace(/-/g, '‑')
 
-projects.forEach((project) => { project.slug = slugify(project.title) })
+projects.forEach((project) => {
+  project.slug = slugify(project.title)
+  project.image = withBase(project.image)
+  project.gallery.forEach((item) => { item.image = withBase(item.image) })
+  if (project.moodBoard) project.moodBoard = withBase(project.moodBoard)
+})
 
 const projectRow = (project, index) => {
   const slides = [{ image: project.image, alt: project.alt }, ...project.gallery]
