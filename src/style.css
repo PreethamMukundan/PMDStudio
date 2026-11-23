@@ -14,6 +14,9 @@
   --placeholder: #b7b7b7;
   --line: #e2ddd7;
   --gutter: clamp(20px, 6.6vw, 36px);
+  /* Main page titles match "studio." in the logo; secondary titles match the top bar links. */
+  --title-size: 31px;
+  --subtitle-size: 19px;
   --sans: 'Helvetica Site', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --serif: 'Cormorant Garamond', Georgia, serif;
   font-family: var(--sans);
@@ -36,8 +39,8 @@ img { display: block; max-width: 100%; }
 body:not([data-view="home"]) .site-header { position: relative; }
 .wordmark { align-items: baseline; display: inline-flex; font-family: var(--serif); gap: .3em; justify-self: start; letter-spacing: -.02em; line-height: 1; }
 .wordmark span { font-size: 56px; letter-spacing: -.04em; }
-.wordmark small { font-size: 31px; }
-.main-nav { display: flex; gap: 52px; font-size: 19px; }
+.wordmark small { font-size: var(--title-size); }
+.main-nav { display: flex; gap: 52px; font-size: var(--subtitle-size); }
 .main-nav a, .menu a, .project-meta a, .site-footer a, .detail-back { transition: opacity .2s ease; }
 .main-nav a:hover, .main-nav a[aria-current] { opacity: .55; }
 .menu-toggle { background: none; border: 0; color: inherit; cursor: pointer; display: grid; gap: 8px; height: 32px; justify-self: end; padding: 0; place-content: center; position: relative; width: 32px; }
@@ -60,14 +63,20 @@ body:not([data-view="home"]) .site-header { position: relative; }
 .label { color: var(--muted); font-size: 14px; margin-bottom: 8px; }
 
 /* Home */
-.home { height: 100vh; height: 100svh; overflow: hidden; }
-.home img { height: 100%; object-fit: cover; width: 100%; }
+.home { height: 100vh; height: 100svh; overflow: hidden; position: relative; }
+/* Home slideshow (src/slideshow.js): slow crossfade with a gentle zoom on each image. */
+.hero-slide { inset: 0; opacity: 0; position: absolute; transition: opacity 1.8s ease; }
+.hero-slide.is-active { opacity: 1; z-index: 1; }
+.hero-slide img { display: block; height: 100%; object-fit: cover; width: 100%; }
+.hero-slide.is-zooming img { animation: hero-zoom 9s ease-out forwards; }
+@keyframes hero-zoom { from { transform: scale(1); } to { transform: scale(1.06); } }
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } .hero-slide.is-zooming img { animation: none; } }
 body[data-view="home"] .site-footer { display: none; }
 
 /* Projects */
 .projects { padding: 40px var(--gutter) 120px; }
 .page-heading { align-items: baseline; display: flex; flex-wrap: wrap; gap: 16px 40px; justify-content: space-between; margin-bottom: 40px; }
-.page-heading h2, .text-page h2 { font-size: 38px; font-weight: 400; letter-spacing: -.045em; line-height: 1.1; }
+.page-heading h2, .text-page h2, .detail-header h2 { font-size: var(--title-size); font-weight: 400; letter-spacing: -.045em; line-height: 1.1; }
 /* Full-screen project scroller */
 body[data-view="projects"] { overflow: hidden; }
 body[data-view="projects"] #app { display: flex; flex-direction: column; height: 100vh; height: 100svh; }
@@ -94,7 +103,9 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 /* Per-project captions keep their space; one fixed caption shows the current project. */
 .project-row .project-caption { visibility: hidden; }
 .caption-overlay { align-items: end; display: grid; gap: 32px; grid-template-columns: minmax(0, 1fr) minmax(0, 4.45fr) minmax(0, 1fr); inset: 0; padding-bottom: 40px; pointer-events: none; position: absolute; }
-.fixed-caption { pointer-events: auto; }
+.fixed-caption { pointer-events: auto; transition: opacity .35s ease, transform .35s ease; }
+.fixed-caption.is-fading { opacity: 0; transform: translateY(6px); }
+@media (prefers-reduced-motion: reduce) { .fixed-caption, .fixed-caption.is-fading { transform: none; transition: none; } }
 @media (prefers-reduced-motion: reduce) { .project-list, .slide-track { transition: none; } }
 .project-name h3 { font-size: 22px; font-weight: 400; letter-spacing: -.045em; line-height: 1.05; }
 .project-name p, .project-meta p { color: var(--muted); font-size: 19px; letter-spacing: -.04em; line-height: 1.1; }
@@ -105,10 +116,12 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 .project-detail { margin: 0 auto; max-width: calc(1110px + 2 * var(--gutter)); padding: 40px var(--gutter) 120px; }
 .detail-back { color: var(--muted); display: inline-block; font-size: 14px; margin-bottom: 28px; }
 .detail-back:hover { color: var(--ink); }
-.detail-header h2 { font-size: 22px; font-weight: 400; letter-spacing: -.045em; line-height: 1.05; }
-.detail-location, .detail-meta { color: var(--muted); font-size: 19px; letter-spacing: -.04em; line-height: 1.1; }
+.detail-header h2 { font-weight: 400; letter-spacing: -.045em; line-height: 1.05; }
+.detail-location, .detail-meta { color: var(--muted); font-size: var(--subtitle-size); letter-spacing: -.04em; line-height: 1.1; }
 .detail-meta { margin-top: 18px; }
 .detail-brief { color: var(--muted); display: grid; font-size: 19px; gap: 1.1em; letter-spacing: -.035em; line-height: 1.05; margin: 30px 0 50px; }
+/* Helvetica Light for the project type | year | status details and the project description. */
+.project-meta, .detail-brief { font-weight: 300; }
 /* Project page images: rows of one or two, sized from each image (see src/gallery.js). */
 .detail-gallery { display: block; }
 .g-row { align-items: center; column-gap: 6%; display: flex; }
@@ -120,7 +133,7 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 
 /* Studio & Info */
 .text-page { margin: 0 auto; max-width: calc(1110px + 2 * var(--gutter)); min-height: 60vh; padding: 40px var(--gutter) 140px; }
-.text-sub { color: var(--muted); font-size: 19px; margin-top: 6px; }
+.text-sub { color: var(--muted); font-size: var(--subtitle-size); margin-top: 6px; }
 .text-body { color: var(--muted); display: grid; font-size: clamp(22px, 2.4vw, 32px); gap: 1em; letter-spacing: -.04em; line-height: 1.15; margin-top: 60px; max-width: 900px; }
 .info-list { border-top: 1px solid var(--line); margin-top: 60px; }
 .info-list div { border-bottom: 1px solid var(--line); display: grid; gap: 16px; grid-template-columns: 1fr 3fr; padding: 22px 0; font-size: 19px; }
@@ -147,19 +160,18 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
   .site-header { grid-template-columns: 1fr auto; padding-top: 40px; }
   .main-nav { display: none; }
   .wordmark span { font-size: 42px; }
-  .wordmark small { font-size: 23px; }
+  :root { --title-size: 23px; }
+  .wordmark small { font-size: var(--title-size); }
   .menu-inner { grid-template-columns: 1fr; padding-top: 150px; }
   .projects { padding-top: 32px; }
   .page-heading { margin-bottom: 36px; }
-  .page-heading h2, .text-page h2 { font-size: 30px; }
   .project-caption { gap: 12px; }
   .project-name h3 { font-size: 21px; }
   .project-name p, .project-meta p { font-size: 18px; }
   .project-meta p { max-width: 9.5em; margin-left: auto; }
   .project-meta a { font-size: 12px; }
   .project-detail { padding-top: 36px; }
-  .detail-header h2 { font-size: 21px; }
-  .detail-location, .detail-meta, .detail-brief { font-size: 17px; }
+  .detail-brief { font-size: 17px; }
   .detail-brief { line-height: 1.12; margin: 26px 0 40px; }
   .g-row { align-items: flex-start; flex-direction: column; row-gap: 12vw; }
   .g-row + .g-row { margin-top: 12vw; }
@@ -171,17 +183,17 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 /* Desktop: sizes taken from the 1920×1080 design (page 5), scaled with the window width.
    1 design pixel = var(--u). */
 @media (min-width: 1101px) {
-  :root { --u: calc(100vw / 1920); --gutter: calc(36 * var(--u)); }
+  :root { --u: calc(100vw / 1920); --gutter: calc(36 * var(--u)); --title-size: calc(34 * var(--u)); --subtitle-size: calc(18.5 * var(--u)); }
   .site-header { align-items: start; padding: calc(39 * var(--u)) var(--gutter) 0; }
   .wordmark { gap: calc(17 * var(--u)); margin-top: calc(3 * var(--u)); }
   .wordmark span { font-size: calc(57 * var(--u)); }
-  .wordmark small { font-size: calc(34 * var(--u)); }
-  .main-nav { font-size: calc(18.5 * var(--u)); gap: calc(55 * var(--u)); letter-spacing: -.045em; padding-top: calc(31 * var(--u)); }
+  .wordmark small { font-size: var(--title-size); }
+  .main-nav { font-size: var(--subtitle-size); gap: calc(55 * var(--u)); letter-spacing: -.045em; padding-top: calc(31 * var(--u)); }
   .main-nav a[aria-current] { opacity: 1; }
   .main-nav a:hover { opacity: .55; }
 
   .projects, .project-detail, .text-page { padding-top: calc(69.4 * var(--u)); }
-  .page-heading h2, .text-page h2 { font-size: calc(35.5 * var(--u)); letter-spacing: -.05em; line-height: 1; }
+  .page-heading h2, .text-page h2 { letter-spacing: -.05em; line-height: 1; }
   .projects .page-heading { margin-bottom: calc(31.6 * var(--u)); }
 
   .project-row, .caption-overlay {
@@ -200,4 +212,31 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
   .project-meta p { flex-basis: 100%; }
   .project-meta a { font-size: calc(12.3 * var(--u)); letter-spacing: -.03em; margin-top: calc(4 * var(--u)); order: 1; }
   .slide-count { font-size: calc(13 * var(--u)); margin-top: 0; order: 2; }
+}
+
+/* Page transitions (see navigate() in src/main.js). */
+.site-header { view-transition-name: site-header; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: .45s; animation-timing-function: ease; }
+
+/* Opening a project: the new page rises in; leaving one: it drops away. */
+html[data-transition="enter-project"]::view-transition-old(root) { animation: vt-fade-out .35s ease both; }
+html[data-transition="enter-project"]::view-transition-new(root) { animation: vt-rise-in .75s cubic-bezier(.2, .7, .2, 1) both; }
+html[data-transition="leave-project"]::view-transition-old(root) { animation: vt-drop-out .5s cubic-bezier(.4, 0, .6, 1) both; }
+html[data-transition="leave-project"]::view-transition-new(root) { animation: vt-fade-in .5s ease .1s both; }
+@keyframes vt-rise-in { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+@keyframes vt-drop-out { to { opacity: 0; transform: translateY(40px); } }
+@keyframes vt-fade-out { to { opacity: 0; } }
+@keyframes vt-fade-in { from { opacity: 0; } }
+
+/* Project page content arrives in sequence (order set with --i in the markup). */
+.project-detail.is-entering .stagger { animation: stagger-in .7s cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(.15s + var(--i, 0) * .09s); }
+@keyframes stagger-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+/* Project page reveal: fade up as items scroll into view. */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .9s ease, transform .9s cubic-bezier(.2, .7, .2, 1); }
+.reveal.is-revealed { opacity: 1; transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  .reveal { opacity: 1; transform: none; transition: none; }
+  .project-detail.is-entering .stagger { animation: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }

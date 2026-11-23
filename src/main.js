@@ -1,6 +1,7 @@
 import './style.css'
 import content from './content.json'
 import { initGalleries } from './gallery.js'
+import { pickSlides, slideshowMarkup, initSlideshow } from './slideshow.js'
 
 // Local files (paths starting with "/") are served under the site base path, e.g. /PMDStudio/ on GitHub Pages.
 const withBase = (path) => (path.startsWith('/') ? import.meta.env.BASE_URL + path.slice(1) : path)
@@ -60,14 +61,14 @@ const projectImages = (project) => [
 
 const projectDetail = (project) => `
   <article class="page project-detail" data-page="project/${project.slug}" hidden>
-    <a class="detail-back" href="#projects">← All projects</a>
+    <a class="detail-back stagger" style="--i: 0" href="#projects">← All projects</a>
     <header class="detail-header">
-      <h2>${project.title}</h2>
-      <p class="detail-location">${project.location}</p>
-      <p class="detail-meta">${meta(project)}</p>
+      <h2 class="stagger" style="--i: 1">${project.title}</h2>
+      <p class="detail-location stagger" style="--i: 2">${project.location}</p>
+      <p class="detail-meta stagger" style="--i: 3">${meta(project)}</p>
     </header>
-    <div class="detail-brief">${project.brief.map((paragraph) => `<p>${paragraph}</p>`).join('')}</div>
-    <div class="detail-gallery" data-gallery>
+    <div class="detail-brief stagger" style="--i: 4">${project.brief.map((paragraph) => `<p>${paragraph}</p>`).join('')}</div>
+    <div class="detail-gallery stagger" style="--i: 5" data-gallery>
       ${projectImages(project).map((item) => `<figure class="g-item${item.drawing ? ' is-drawing' : ''}"><img src="${item.image}" alt="${item.alt}" loading="lazy" decoding="async"></figure>`).join('')}
     </div>
   </article>`
@@ -94,10 +95,7 @@ document.querySelector('#app').innerHTML = `
   </aside>
   <main>
     <section class="page home" data-page="home" aria-label="${site.name}">
-      <picture>
-        <source media="(max-width: 700px)" srcset="${site.heroImageMobile}">
-        <img src="${site.heroImage}" alt="${site.heroAlt}">
-      </picture>
+      ${slideshowMarkup(pickSlides(site, projects))}
     </section>
     <section class="page projects" data-page="projects" aria-labelledby="projects-title" hidden>
       <div class="page-heading">
@@ -166,13 +164,32 @@ function goToProject(index, animate = true) {
   track.classList.toggle('no-anim', !animate)
   track.style.transform = `translate3d(0, ${-rows[current].offsetTop}px, 0)`
   rows.forEach((row, i) => row.toggleAttribute('inert', i !== current))
-  syncCaption()
+  syncCaption(animate)
   lockedUntil = Date.now() + (animate ? DURATION + 150 : 0)
 }
 
-function syncCaption() {
+// Shows the current project's details in the fixed box. On phones, when the project changes with a
+// scroll, the box fades out, swaps text halfway through the scroll, then fades back in.
+const CAPTION_FADE = 350
+const fadeCaptions = window.matchMedia('(max-width: 700px)')
+let captionRow = null
+let captionTimer = 0
+function syncCaption(fade = false) {
   const row = visibleRows()[current]
-  fixedCaption.innerHTML = row ? row.querySelector('.project-caption').innerHTML : ''
+  const swap = () => {
+    captionTimer = 0
+    const shown = visibleRows()[current]
+    captionRow = shown
+    fixedCaption.innerHTML = shown ? shown.querySelector('.project-caption').innerHTML : ''
+    fixedCaption.classList.remove('is-fading')
+  }
+  if (fade && fadeCaptions.matches && row !== captionRow) {
+    fixedCaption.classList.add('is-fading')
+    clearTimeout(captionTimer)
+    captionTimer = setTimeout(swap, CAPTION_FADE)
+  } else if (!captionTimer) {
+    swap() // same project (e.g. image counter changed) or no animation: update in place
+  }
 }
 
 function step(direction) {
@@ -333,7 +350,10 @@ track.addEventListener('click', (event) => {
 stage.addEventListener('scroll', () => { stage.scrollTop = 0; stage.scrollLeft = 0 })
 window.addEventListener('resize', () => { if (document.body.dataset.view === 'projects') goToProject(current, false) })
 
+let shownKey = null // page currently on screen
+
 function route() {
+  const previousKey = shownKey
   const legacyRoutes = { top: '', work: 'projects', architecture: 'projects/architecture', contact: 'info' }
   let hash = window.location.hash.replace(/^#\/?/, '')
   if (hash in legacyRoutes) hash = legacyRoutes[hash]
@@ -345,6 +365,8 @@ function route() {
   let activePage = document.querySelector(`[data-page="${pageKey}"]`)
   if (!activePage) activePage = document.querySelector('[data-page="home"]')
   const activeKey = activePage.dataset.page
+  shownKey = activeKey
+  if (activeKey.startsWith('project/') && activeKey !== previousKey) staggerIn(activePage)
 
   document.querySelectorAll('[data-page]').forEach((page) => { page.hidden = page !== activePage })
   document.body.dataset.view = activeKey === 'home' ? 'home' : activeKey.startsWith('project/') ? 'project' : activeKey
@@ -362,12 +384,63 @@ function route() {
       else link.removeAttribute('aria-current')
     })
     resetStage()
+    // Coming back from a project page: return to that project instead of the first one.
+    if (previousKey?.startsWith('project/')) {
+      const index = visibleRows().findIndex((row) => row.querySelector('.slide-link')?.getAttribute('href') === '#' + previousKey)
+      if (index > 0) goToProject(index, false)
+    }
   }
 
   setMenu(false)
   window.scrollTo(0, 0)
 }
 
+/* Page transitions: every page change crossfades softly (View Transitions API, where supported).
+   Browsers without support, and visitors who ask for less motion, get an instant switch. */
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+// Opening a project: the project page rises in. Leaving one: it drops away. Other pages crossfade.
+function navigate() {
+  if (!document.startViewTransition || reduceMotion.matches) { route(); return }
+  const fromProject = shownKey?.startsWith('project/')
+  const root = document.documentElement
+  const transition = document.startViewTransition(() => {
+    route()
+    const toProject = shownKey.startsWith('project/')
+    root.dataset.transition = toProject && !fromProject ? 'enter-project' : fromProject && !toProject ? 'leave-project' : ''
+  })
+  transition.finished.finally(() => { delete root.dataset.transition })
+}
+
+// Project page content arrives in sequence (title, details, description, first image).
+function staggerIn(page) {
+  if (reduceMotion.matches) return
+  page.classList.remove('is-entering')
+  void page.offsetWidth // restart the animation if the page is opened again
+  page.classList.add('is-entering')
+  clearTimeout(page.staggerTimer)
+  page.staggerTimer = setTimeout(() => page.classList.remove('is-entering'), 1600)
+}
+
+/* Project pages: images and description fade up gently as they scroll into view (once each).
+   The first image shows straight away, as the page opens. */
+function initReveal() {
+  if (!('IntersectionObserver' in window) || reduceMotion.matches) return
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return
+      entry.target.classList.add('is-revealed')
+      observer.unobserve(entry.target)
+    })
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0.12 })
+  document.querySelectorAll('.project-detail').forEach((page) => {
+    const items = [...page.querySelectorAll('.g-item')].slice(1)
+    items.forEach((item) => { item.classList.add('reveal'); observer.observe(item) })
+  })
+}
+
 initGalleries()
-window.addEventListener('hashchange', route)
+initReveal()
+initSlideshow(document.querySelector('.home'), () => document.body.dataset.view === 'home')
+window.addEventListener('hashchange', navigate)
 route()
