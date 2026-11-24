@@ -141,7 +141,7 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 .info-list a:hover { opacity: .55; }
 
 /* Footer */
-.site-footer { border-top: 1px solid var(--line); color: var(--muted); display: flex; flex-wrap: wrap; font-size: 14px; gap: 12px 32px; justify-content: space-between; padding: 28px var(--gutter); }
+.site-footer { border-top: 1px solid var(--line); color: var(--muted); display: flex; flex-wrap: wrap; font-size: 13px; gap: 4px 32px; justify-content: space-between; padding: 10px var(--gutter); }
 .site-footer a:hover { color: var(--ink); }
 
 /* Tablet */
@@ -157,7 +157,7 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 
 /* Mobile */
 @media (max-width: 700px) {
-  .site-header { grid-template-columns: 1fr auto; padding-top: 40px; }
+  .site-header { grid-template-columns: 1fr auto; padding-top: 18px; }
   .main-nav { display: none; }
   .wordmark span { font-size: 42px; }
   :root { --title-size: 23px; }

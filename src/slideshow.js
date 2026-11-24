@@ -6,7 +6,7 @@
 */
 
 const MAX_SLIDES = 6
-const INTERVAL = 6000 // ms each image stays up
+const INTERVAL = 5000 // ms each image stays up
 const FADE = 1800 // ms crossfade (keep in sync with .hero-slide transition in style.css)
 
 // Ask image CDNs that support it (Unsplash) for a sharper, full-screen size.
