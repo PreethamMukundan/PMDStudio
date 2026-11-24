@@ -159,17 +159,19 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 @media (max-width: 700px) {
   .site-header { grid-template-columns: 1fr auto; padding-top: 18px; }
   .main-nav { display: none; }
-  .wordmark span { font-size: 42px; }
-  :root { --title-size: 23px; }
+  /* Same proportions as the desktop design (page 5), with 1 design pixel = 0.8px. */
+  :root { --u: 0.8px; --title-size: calc(34 * var(--u)); --subtitle-size: calc(18.5 * var(--u)); }
+  .wordmark { gap: calc(17 * var(--u)); }
+  .wordmark span { font-size: calc(57 * var(--u)); }
   .wordmark small { font-size: var(--title-size); }
   .menu-inner { grid-template-columns: 1fr; padding-top: 150px; }
   .projects { padding-top: 32px; }
   .page-heading { margin-bottom: 36px; }
   .project-caption { gap: 12px; }
-  .project-name h3 { font-size: 21px; }
-  .project-name p, .project-meta p { font-size: 18px; }
+  .project-name h3 { font-size: calc(21.3 * var(--u)); }
+  .project-name p, .project-meta p { font-size: var(--subtitle-size); }
   .project-meta p { max-width: 9.5em; margin-left: auto; }
-  .project-meta a { font-size: 12px; }
+  .project-meta a, .slide-count { font-size: 11px; }
   .project-detail { padding-top: 36px; }
   .detail-brief { line-height: 1.12; margin: 26px 0 40px; }
   .g-row { align-items: flex-start; flex-direction: column; row-gap: 12vw; }
