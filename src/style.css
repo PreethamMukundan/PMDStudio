@@ -83,6 +83,9 @@ body[data-view="projects"] #app { display: flex; flex-direction: column; height:
 body[data-view="projects"] main { display: flex; flex: 1; flex-direction: column; min-height: 0; }
 body[data-view="projects"] .projects { display: flex; flex: 1; flex-direction: column; min-height: 0; padding-bottom: 0; }
 body[data-view="projects"] .site-footer { display: none; }
+/* Short pages (Studio, Info) keep the footer at the bottom of the screen, like the project pages. */
+body:not([data-view="home"]):not([data-view="projects"]) #app { display: flex; flex-direction: column; min-height: 100vh; min-height: 100svh; }
+body:not([data-view="home"]):not([data-view="projects"]) main { flex: 1; }
 .projects .page-heading { flex: none; margin-bottom: 24px; }
 .project-stage { container-type: size; flex: 1; min-height: 0; overflow: hidden; position: relative; }
 .project-list { transition: transform 1s ease; will-change: transform; }
