@@ -57,11 +57,14 @@ export function layoutGallery(gallery) {
       const mobileWidth = ratio < PORTRAIT ? 72 : role === 'single' || role === 'L' ? 100 : 80
       figure.style.setProperty('--mw', `${mobileWidth}%`)
       figure.style.aspectRatio = ratio.toFixed(4)
+      figure.style.setProperty('--r', ratio.toFixed(4)) // used by the PC layout to size the first image
       row.appendChild(figure)
     })
     fragment.appendChild(row)
   })
   gallery.replaceChildren(fragment)
+  // The PC layout lines the title and text up with the first image, which is sized from this.
+  if (rows[0]) gallery.parentElement.style.setProperty('--r1', rows[0][0].ratio.toFixed(4))
 }
 
 export function initGalleries() {

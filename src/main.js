@@ -16,7 +16,7 @@ const placeholderFloorPlans = [
 ]
 const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const instagramUrl = `https://instagram.com/${site.instagram.replace('@', '')}`
-const meta = (project) => [project.typology, project.year, project.status].filter(Boolean).join(' | ').replace(/-/g, '‑')
+const meta = (project) => [project.typology, project.year].filter(Boolean).join(' | ').replace(/-/g, '‑')
 
 projects.forEach((project) => {
   project.slug = slugify(project.title)
@@ -45,7 +45,6 @@ const projectRow = (project, index) => {
       </div>
       <div class="project-meta">
         <p>${meta(project)}</p>
-        ${multiple ? `<span class="slide-count" aria-live="polite">1/${slides.length}</span>` : ''}
         <a href="#project/${project.slug}">more info</a>
       </div>
     </div>
@@ -87,7 +86,6 @@ document.querySelector('#app').innerHTML = `
         ${navigation.map((item) => `<a href="#${item.target}">${item.label}</a>`).join('')}
       </nav>
       <div class="menu-group">
-        <p class="label">Contact</p>
         <a href="mailto:${site.email}">${site.email}</a>
         <a href="${instagramUrl}" target="_blank" rel="noreferrer">Instagram ${site.instagram}</a>
       </div>
@@ -235,8 +233,6 @@ function goToSlide(row, direction) {
   if (position === 0 || position === total + 1) {
     media.settleTimer = setTimeout(() => settleSlide(media), SLIDE_DURATION)
   }
-  row.querySelector('.slide-count').textContent = `${next + 1}/${total}`
-  syncCaption()
 }
 
 function resetStage() {
@@ -245,8 +241,6 @@ function resetStage() {
     media.settleTimer = null
     media.dataset.index = 0
     if (Number(media.dataset.slides) > 1) placeSlide(media, 1, false)
-    const count = media.closest('.project-row').querySelector('.slide-count')
-    if (count) count.textContent = `1/${media.dataset.slides}`
   })
   goToProject(0, false)
 }
@@ -320,8 +314,6 @@ window.addEventListener('pointermove', (event) => {
   while (drag.dx >= drag.width) { drag.index = (drag.index - 1 + total) % total; drag.startX += drag.width; drag.dx -= drag.width }
   if (drag.index !== startIndex) {
     drag.media.dataset.index = drag.index
-    drag.media.closest('.project-row').querySelector('.slide-count').textContent = `${drag.index + 1}/${total}`
-    syncCaption()
   }
   drag.media.querySelector('.slide-track').style.transform = `translate3d(${-(drag.index + 1) * drag.width + drag.dx}px, 0, 0)`
 })
