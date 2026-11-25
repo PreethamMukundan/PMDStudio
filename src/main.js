@@ -17,6 +17,8 @@ const placeholderFloorPlans = [
 const slugify = (text) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 const instagramUrl = `https://instagram.com/${site.instagram.replace('@', '')}`
 const meta = (project) => [project.typology, project.year].filter(Boolean).join(' | ').replace(/-/g, '‑')
+// Project page version: on PC the year drops to its own line under the type (see style.css).
+const detailMeta = (project) => [project.typology, project.year].filter(Boolean).map((part) => `<span>${String(part).replace(/-/g, '‑')}</span>`).join('<span class="meta-sep"> | </span>')
 
 projects.forEach((project) => {
   project.slug = slugify(project.title)
@@ -45,7 +47,6 @@ const projectRow = (project, index) => {
       </div>
       <div class="project-meta">
         <p>${meta(project)}</p>
-        <a href="#project/${project.slug}">more info</a>
       </div>
     </div>
   </article>`
@@ -64,7 +65,7 @@ const projectDetail = (project) => `
     <header class="detail-header">
       <h2 class="stagger" style="--i: 1">${project.title}</h2>
       <p class="detail-location stagger" style="--i: 2">${project.location}</p>
-      <p class="detail-meta stagger" style="--i: 3">${meta(project)}</p>
+      <p class="detail-meta stagger" style="--i: 3">${detailMeta(project)}</p>
     </header>
     <div class="detail-brief stagger" style="--i: 4">${project.brief.map((paragraph) => `<p>${paragraph}</p>`).join('')}</div>
     <div class="detail-gallery stagger" style="--i: 5" data-gallery>

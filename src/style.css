@@ -41,7 +41,7 @@ body:not([data-view="home"]) .site-header { position: relative; }
 .wordmark span { font-size: 56px; letter-spacing: -.04em; }
 .wordmark small { font-size: var(--title-size); }
 .main-nav { display: flex; gap: 52px; font-size: var(--subtitle-size); }
-.main-nav a, .menu a, .project-meta a, .site-footer a, .detail-back { transition: opacity .2s ease; }
+.main-nav a, .menu a, .site-footer a, .detail-back { transition: opacity .2s ease; }
 .main-nav a:hover, .main-nav a[aria-current] { opacity: .55; }
 .menu-toggle { background: none; border: 0; color: inherit; cursor: pointer; display: grid; gap: 8px; height: 32px; justify-self: end; padding: 0; place-content: center; position: relative; width: 32px; }
 .menu-toggle span { background: currentColor; display: block; height: 1.5px; transition: transform .3s ease, opacity .3s ease; width: 30px; }
@@ -93,15 +93,22 @@ body:not([data-view="home"]):not([data-view="projects"]) main { flex: 1; }
 .project-list.no-anim { transition: none; }
 .project-row { align-items: end; display: grid; gap: 32px; grid-template-columns: minmax(0, 1fr) minmax(0, 4.45fr) minmax(0, 1fr); height: 100cqh; padding-bottom: 40px; }
 .project-row[hidden] { display: none !important; }
-.project-media { align-self: end; aspect-ratio: 1274 / 704; background: var(--placeholder); grid-column: 2; justify-self: center; overflow: hidden; position: relative; width: min(100%, calc((100cqh - 40px) * 1274 / 704)); }
+.project-media { align-self: end; aspect-ratio: 1274 / 704; background: transparent; grid-column: 2; justify-self: center; overflow: hidden; position: relative; width: min(100%, calc((100cqh - 40px) * 1274 / 704)); }
 .slide-track { display: flex; height: 100%; transition: transform 1s ease; }
-.slide-track img { flex: 0 0 100%; height: 100%; object-fit: cover; user-select: none; width: 100%; }
+/* Each image keeps its own proportions, as large as fits in the image area, sitting on its bottom edge
+   (in line with the project details). */
+.slide-track img { flex: 0 0 100%; height: 100%; object-fit: contain; object-position: center bottom; user-select: none; width: 100%; }
 .slide-link { inset: 0; position: absolute; -webkit-user-drag: none; user-select: none; }
 .slide-link:focus-visible { outline: 1px solid #fff; outline-offset: -8px; }
 /* Cursors: circle = click opens the project; circle with arrows = drag for more images; small arrows circle = dragging. */
 .slide-link { cursor: url('/cursors/view.svg') 14 14, pointer; }
 .is-multi .slide-link { cursor: url('/cursors/view-drag.svg') 14 14, grab; }
 body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 14, grabbing !important; user-select: none; }
+/* PC: the browser's normal link cursor over project images, no custom icons. */
+@media (min-width: 1101px) {
+  .slide-link, .is-multi .slide-link { cursor: pointer; }
+  body.is-dragging, body.is-dragging * { cursor: pointer !important; }
+}
 .project-caption { display: grid; gap: 18px; grid-column: 3; }
 /* Per-project captions keep their space; one fixed caption shows the current project. */
 .project-row .project-caption { visibility: hidden; }
@@ -111,9 +118,7 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 @media (prefers-reduced-motion: reduce) { .fixed-caption, .fixed-caption.is-fading { transform: none; transition: none; } }
 @media (prefers-reduced-motion: reduce) { .project-list, .slide-track { transition: none; } }
 .project-name h3 { font-size: 22px; font-weight: 400; letter-spacing: -.045em; line-height: 1.05; }
-.project-name p, .project-meta p { color: var(--muted); font-size: 19px; letter-spacing: -.04em; line-height: 1.1; }
-.project-meta a { display: inline-block; font-size: 13px; margin-top: 4px; }
-.project-meta a:hover { opacity: .55; }
+.project-name p, .project-meta p { color: var(--ink); font-size: 19px; letter-spacing: -.04em; line-height: 1.1; }
 
 /* Project detail */
 .project-detail { margin: 0 auto; max-width: calc(1110px + 2 * var(--gutter)); padding: 40px var(--gutter) 120px; }
@@ -160,7 +165,8 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 
 /* Mobile */
 @media (max-width: 700px) {
-  .site-header { grid-template-columns: 1fr auto; padding-left: 10px; padding-top: 18px; }
+  /* The top of the letters of "pmd" sits 10px from the top, the same as the left padding (7px + the space above the letters). */
+  .site-header { grid-template-columns: 1fr auto; padding-left: 10px; padding-top: 7px; }
   .main-nav { display: none; }
   /* Same proportions as the desktop design (page 5), with 1 design pixel = 0.8px. */
   /* The logo is a little smaller (1 design pixel = 0.65px); --logo-studio is the size of its "studio.". */
@@ -181,36 +187,47 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
   .menu-group { font-size: calc(var(--logo-studio) * 39 / 53 * .75); }
   .projects { padding-top: 32px; }
   .page-heading { margin-bottom: 36px; }
-  .project-caption { gap: 12px; }
+  .project-caption { align-items: end; gap: 12px; } /* type | year sits on the same line as the location */
   /* Projects page: image fills the height between header and caption, project name looks the size of the logo's "studio.",
      location in Helvetica Light at 75% of that. */
   .project-media { flex: 1; min-height: 0; }
-  .project-name h3 { font-size: calc(var(--logo-studio) * 39 / 53); }
+  .slide-track img { object-position: center; } /* phones: image centred in its area */
+  /* Like PC: project names in the logo font at the size of "studio."; details Helvetica Light at 75% of the
+     name size used elsewhere on phones. */
+  .project-name h3 { font-family: var(--serif); font-size: var(--logo-studio); font-weight: 400; letter-spacing: -.02rem; }
   .project-name p { font-size: calc(var(--logo-studio) * 39 / 53 * .75); font-weight: 300; }
-  .project-meta p { font-size: var(--subtitle-size); }
+  .project-meta p { font-size: calc(var(--logo-studio) * 39 / 53 * .75); }
   .project-meta p { margin-left: auto; }
-  .project-meta a { font-size: 11px; }
   .project-detail { padding-top: 36px; }
   /* Project page: name looks the size of the logo's "studio."; location, type | year and description 75% of that. */
-  .detail-header h2 { font-size: calc(var(--logo-studio) * 39 / 53); }
-  .detail-location, .detail-meta { font-size: calc(var(--logo-studio) * 39 / 53 * .75); }
+  .detail-header h2 { font-family: var(--serif); font-size: var(--logo-studio); font-weight: 400; letter-spacing: -.02rem; }
+  .detail-location, .detail-meta { color: var(--ink); font-size: calc(var(--logo-studio) * 39 / 53 * .75); }
+  .detail-back { font-size: calc(var(--logo-studio) * 39 / 53 * .75); }
+  .detail-meta span { display: block; }
+  .detail-meta .meta-sep { display: none; }
   .detail-brief { font-size: calc(var(--logo-studio) * 39 / 53 * .75); line-height: 1.12; margin: 26px 0 40px; }
   .g-row { align-items: flex-start; flex-direction: column; row-gap: 12vw; }
   .g-row + .g-row { margin-top: 12vw; }
   .g-item { width: var(--mw, 100%); }
   .info-list div { grid-template-columns: 1fr; gap: 4px; font-size: 17px; }
+  /* Studio page: same type as a project page. */
+  .text-page[data-page="studio"] h2 { font-family: var(--serif); font-size: var(--logo-studio); font-weight: 400; letter-spacing: -.02rem; line-height: 1.05; }
+  .text-page[data-page="studio"] .text-sub { color: var(--ink); font-size: calc(var(--logo-studio) * 39 / 53 * .75); font-weight: 300; letter-spacing: -.04em; line-height: 1.1; margin-top: 0; }
   .text-body { line-height: 1.12; margin-top: 40px; }
+  .text-page[data-page="studio"] .text-body { font-size: calc(var(--logo-studio) * 39 / 53 * .75); margin-top: 26px; }
 }
 
 /* Desktop: sizes taken from the 1920×1080 design (page 5), scaled with the window width.
    1 design pixel = var(--u). */
 @media (min-width: 1101px) {
   :root { --u: calc(100vw / 1920); --gutter: calc(36 * var(--u)); --title-size: calc(34 * var(--u)); --subtitle-size: calc(18.5 * var(--u)); --name-size: calc(var(--title-size) * 39 / 53); }
-  .site-header { align-items: start; padding: calc(24 * var(--u)) var(--gutter) 0 calc(20 * var(--u)); }
-  .wordmark { gap: calc(17 * var(--u)); margin-top: calc(3 * var(--u)); }
+  /* The top of the letters of "pmd" sits 20 design px from the top, the same as the logo's left padding
+     (the 15.5 allows for the space above the letters inside the line). The menu sits on the logo's baseline. */
+  .site-header { align-items: start; padding: calc(15.5 * var(--u)) var(--gutter) 0 calc(20 * var(--u)); }
+  .wordmark { gap: calc(17 * var(--u)); }
   .wordmark span { font-size: calc(57 * var(--u)); }
   .wordmark small { font-size: var(--title-size); }
-  .main-nav { font-size: var(--subtitle-size); gap: calc(55 * var(--u)); letter-spacing: -.045em; padding-top: calc(31 * var(--u)); }
+  .main-nav { font-size: var(--subtitle-size); gap: calc(55 * var(--u)); letter-spacing: -.045em; padding-top: calc(28 * var(--u)); }
   .main-nav a[aria-current] { opacity: 1; }
   .main-nav a:hover { opacity: .55; }
 
@@ -221,26 +238,38 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
 
   .project-row, .caption-overlay {
     --img-h: min(calc(703 * var(--u)), calc(100cqh - 24px));
-    /* Image centred on the page (equal columns either side), details centred vertically beside it. */
+    /* Image centred on the page (equal columns either side), details lined up with its bottom edge. */
     align-content: center; align-items: center; column-gap: calc(31 * var(--u));
     grid-template-columns: minmax(0, 1fr) calc(1275 * var(--u)) minmax(0, 1fr);
     grid-template-rows: var(--img-h); padding-bottom: 0;
   }
   .project-media { align-self: center; aspect-ratio: 1275 / 703; height: var(--img-h); justify-self: center; width: auto; max-width: 100%; }
-  .caption-overlay .project-caption { align-self: center; }
+  .caption-overlay .project-caption { align-self: end; }
   .project-caption { gap: calc(24 * var(--u)); }
   /* Project details: name looks the size of the logo's "studio." (Helvetica's lowercase is taller than
      Cormorant's, so it is set at 39/53 of it); everything else Helvetica Light at 75% of that. */
-  .project-name h3 { font-size: var(--name-size); letter-spacing: -.05em; line-height: 1; }
+  .project-name h3 { font-family: var(--serif); font-size: var(--title-size); font-weight: 400; letter-spacing: -.02rem; line-height: 1; } /* same font and size as the project page title */
   .project-name p { margin-top: calc(1 * var(--u)); }
   /* Project page: same scale as the Projects page details. */
-  .detail-header h2 { font-size: var(--name-size); }
+  /* Same font and size as "studio." in the logo. */
+  .detail-header h2 { font-family: var(--serif); font-size: var(--title-size); font-weight: 400; letter-spacing: -.02rem; }
   .detail-location, .detail-meta, .detail-brief { font-size: calc(var(--name-size) * .75); }
+  .detail-location, .detail-meta { color: var(--ink); } /* black, like the title */
+  .detail-meta span { display: block; }
+  .detail-meta .meta-sep { display: none; }
+  /* Studio page: same type and spacing as a project page (title in the logo font, black Helvetica Light
+     location, grey description), in a centred column the width of a typical project page's. */
+  .text-page[data-page="studio"] { --text-w: calc(min(100%, (100svh - 2 * var(--gutter)) * 1.5) * .9); }
+  .text-page[data-page="studio"] h2 { font-family: var(--serif); font-size: var(--title-size); font-weight: 400; letter-spacing: -.02rem; line-height: 1.05; margin-left: calc((100% - var(--text-w)) / 2); margin-top: calc(var(--name-size) * .75 * 1.2 + 28px); }
+  .text-page[data-page="studio"] .text-sub { color: var(--ink); font-size: calc(var(--name-size) * .75); font-weight: 300; letter-spacing: -.04em; line-height: 1.1; margin: 0 0 0 calc((100% - var(--text-w)) / 2); }
+  .text-page[data-page="studio"] .text-body { font-size: calc(var(--name-size) * .75); gap: 1.1em; letter-spacing: -.035em; line-height: 1.05; margin: 30px auto 50px; max-width: none; width: var(--text-w); }
   /* First image: centred, as wide as the text column allows while still fitting the screen height. */
   .detail-gallery .g-row:first-child { justify-content: center; }
   .detail-gallery .g-row:first-child .g-item { width: min(100%, calc((100svh - 2 * var(--gutter)) * var(--r, 1.5))); }
-  /* Title, details and description start where that first image starts. */
-  .project-detail > .detail-header, .project-detail > .detail-brief { margin-left: max(0px, calc((100% - (100svh - 2 * var(--gutter)) * var(--r1, 1.5)) / 2)); }
+  /* Title, details and description share a centred column 10% narrower than that first image. */
+  .project-detail { --text-w: calc(min(100%, (100svh - 2 * var(--gutter)) * var(--r1, 1.5)) * .9); }
+  .project-detail > .detail-header { margin-left: calc((100% - var(--text-w)) / 2); }
+  .project-detail > .detail-brief { margin-inline: auto; width: var(--text-w); }
   /* "All projects": 75% of the project name size, near the left edge of the page. Taken out of the
      flow, so the title below keeps its place via the top margin. */
   .project-detail > .detail-back { font-size: calc(var(--name-size) * .75); left: calc(72 * var(--u)); line-height: 1.2; margin: 0; position: absolute; }
@@ -248,7 +277,6 @@ body.is-dragging, body.is-dragging * { cursor: url('/cursors/dragging.svg') 14 1
   .project-name p, .project-meta p { font-size: calc(var(--name-size) * .75); font-weight: 300; letter-spacing: -.045em; line-height: 1.05; }
   .project-meta { display: flex; flex-wrap: wrap; align-items: baseline; column-gap: calc(14 * var(--u)); }
   .project-meta p { flex-basis: 100%; }
-  .project-meta a { color: var(--muted); font-size: calc(var(--name-size) * .7); letter-spacing: -.03em; margin-top: calc(4 * var(--u)); order: 1; }
 }
 
 /* Page transitions (see navigate() in src/main.js). */
